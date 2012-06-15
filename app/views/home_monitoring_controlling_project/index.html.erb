@@ -4,6 +4,8 @@
 
 <%= render :partial => 'mcmenu' %>
 
+<%= render :partial => 'mcfilters' %>
+
 <div style="float: left;">
 <h2><%=t :statuses_issue_label_title %> - <%=  @all_project_issues.count %> <%=t :tasks_label%>, <%= @overdueissues.count %> <%=t :overdue_text%> </h2>
  <div id="container" style="width: 650px; height: 400px; margin: 0 auto; float: left;"></div>

@@ -38,16 +38,19 @@ class McHumanResourceMgmtProjectController < ApplicationController
     order by 2,3;")
 =end
 
-  @statusesByAssigneds = Issue.find_by_sql("select assigned_to_id, (select firstname from users where id = assigned_to_id) as assigned_name,
-                                            issue_statuses.id, issue_statuses.name, 
-                                       	    (select COUNT(1) 
-                                             from issues i 
-                                             where i.project_id in (#{stringSqlProjectsSubPorjects})
-                                             and ((i.assigned_to_id = issues.assigned_to_id and i.assigned_to_id is not null)or(i.assigned_to_id is null and issues.assigned_to_id is null)) and i.status_id = issue_statuses.id) as totalassignedbystatuses
-                                             from issues, issue_statuses  
-                                             where project_id in (#{stringSqlProjectsSubPorjects}) 
-                                             group by assigned_to_id, assigned_name, issue_statuses.id, issue_statuses.name
-                                             order by 2,3;")  
+    filter_str = params[:filter_team].blank? ? "FROM issues, issue_statuses WHERE" : "FROM issues, issue_statuses, users us, groups_users gu WHERE issues.assigned_to_id = us.id
+                          and us.id = gu.user_id and gu.group_id = #{params[:filter_team]} AND"
+
+    filter_str += " issues.fixed_version_id = #{params[:filter_version]} AND" unless params[:filter_version].blank?
+
+    @statusesByAssigneds = Issue.find_by_sql("select assigned_to_id, (select firstname from users where id = assigned_to_id) as assigned_name,
+                                              issue_statuses.id, issue_statuses.name, 
+                                         	    (select COUNT(1) 
+                                               #{filter_str.gsub('FROM issues, issue_statuses', 'FROM issues i').gsub('issues.', 'i.')} i.project_id in (#{stringSqlProjectsSubPorjects})
+                                               and ((i.assigned_to_id = issues.assigned_to_id and i.assigned_to_id is not null)or(i.assigned_to_id is null and issues.assigned_to_id is null)) and i.status_id = issue_statuses.id) as totalassignedbystatuses
+                                               #{filter_str} project_id in (#{stringSqlProjectsSubPorjects}) 
+                                               group by assigned_to_id, assigned_name, issue_statuses.id, issue_statuses.name
+                                               order by 2,3;")  
     
     
   end
