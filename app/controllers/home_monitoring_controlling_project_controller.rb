@@ -87,6 +87,10 @@ class HomeMonitoringControllingProjectController < ApplicationController
                                              from issues where project_id in (#{stringSqlProjectsSubPorjects}) 
                                              and due_date is null
                                              order by 1;")
+
+   @statuses.select!{|status| status.totalissues != "0"}
+   @overdueissueschart.select! {|issue| issue.totalissuedelayed.to_i != 0}
+
   end
 
   private
