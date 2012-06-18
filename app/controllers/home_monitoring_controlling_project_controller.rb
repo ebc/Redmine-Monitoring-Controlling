@@ -39,7 +39,7 @@ class HomeMonitoringControllingProjectController < ApplicationController
     @statuses = IssueStatus.find_by_sql("SELECT *,
                                           ((SELECT COUNT(1) #{filter_str} project_id in (#{stringSqlProjectsSubPorjects}) and status_id = issue_statuses.id)
                                           /
-                                          (SELECT COUNT(1) #{filter_str} project_id in (#{stringSqlProjectsSubPorjects})))*100 as percent,
+                                          NULLIF((SELECT COUNT(1) #{filter_str} project_id in (#{stringSqlProjectsSubPorjects})),0))*100 as percent,
                                           (SELECT COUNT(1) #{filter_str} project_id in (#{stringSqlProjectsSubPorjects}) and status_id = issue_statuses.id)
                                           AS totalissues
                                           FROM issue_statuses;")
