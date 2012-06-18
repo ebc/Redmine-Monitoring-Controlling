@@ -3,7 +3,7 @@
   <%= form_tag '', :method => "get" do %>
 
     <%= label_tag :filter_team, t(:label_group) %>
-    <%= select_tag :filter_team, options_from_collection_for_select(Group.all, 'id', 'lastname', params[:filter_team]), :include_blank => true %>
+    <%= select_tag :filter_team, options_from_collection_for_select(@project.member_principals.select{|m| m.principal.is_a?(Group) }.collect!{|m| m.principal}, 'id', 'lastname', params[:filter_team]), :include_blank => true %>
     
     <%= label_tag :filter_version, t(:label_version) %>
     <%= select_tag :filter_version, options_from_collection_for_select(@project.versions, 'id', 'name', params[:filter_version]), :include_blank => true %>
